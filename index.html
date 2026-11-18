@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baseplate Clássica — Plataforma 3D</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- ==================== TELA INICIAL (PORTAL) ==================== -->
+  <div id="portal-screen">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand-logo">
+          <div class="brand-square"></div>
+          <span>BLOXVERSE</span>
+        </div>
+        <nav class="top-nav">
+          <button class="nav-tab active" data-page="home">Início</button>
+          <button class="nav-tab" data-page="discover">Descobrir</button>
+          <button class="nav-tab" data-page="avatar">Avatar</button>
+        </nav>
+      </div>
+      <div class="topbar-right">
+        <div class="online-pill">
+          <span class="dot-green"></span>
+          <span id="lobby-online-count">1 online</span>
+        </div>
+        <div class="user-badge">
+          <div class="user-head-icon" id="topbar-avatar-color"></div>
+          <span id="topbar-username">Jogador</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="portal-body">
+      <aside class="sidebar">
+        <button class="side-btn active" data-page="home">🏠 Início</button>
+        <button class="side-btn" data-page="discover">🧭 Descobrir</button>
+        <button class="side-btn" data-page="avatar">🧍 Avatar</button>
+        <div class="side-divider"></div>
+        <div class="side-info">
+          <p class="side-title">Status do Servidor</p>
+          <p id="firebase-status-text" class="status-warn">Modo Local (Configure o Firebase)</p>
+        </div>
+      </aside>
+
+      <main class="portal-content">
+        <!-- PÁGINA: INÍCIO / DESCOBRIR -->
+        <section id="page-home" class="portal-page active">
+          <div class="welcome-banner">
+            <div>
+              <h1>Bem-vindo, <span id="welcome-name">Jogador</span>!</h1>
+              <p>Escolha seu apelido e entre na experiência de demonstração oficial.</p>
+            </div>
+            <div class="nick-box">
+              <label for="nickname-input">Seu Nickname:</label>
+              <input type="text" id="nickname-input" maxlength="18" placeholder="Digite seu nome..." />
+            </div>
+          </div>
+
+          <h2 class="section-heading">Experiência em Demonstração</h2>
+
+          <div class="games-grid">
+            <!-- ÚNICO JOGO DE DEMONSTRAÇÃO -->
+            <div class="game-card" id="open-game-modal">
+              <div class="game-thumb">
+                <div class="thumb-sky">
+                  <div class="thumb-sun"></div>
+                  <div class="thumb-noob">
+                    <div class="tn-head"></div>
+                    <div class="tn-torso"></div>
+                    <div class="tn-legs"></div>
+                  </div>
+                  <div class="thumb-spawn"></div>
+                  <div class="thumb-studs"></div>
+                </div>
+                <span class="demo-tag">DEMONSTRAÇÃO</span>
+              </div>
+              <div class="game-meta">
+                <h3>Baseplate Clássica</h3>
+                <p class="game-creator">Por <strong>Yohan Gabriel</strong></p>
+                <div class="game-stats">
+                  <span>👍 100%</span>
+                  <span>👥 <b id="card-players-count">1</b> jogando</span>
+                </div>
+                <button class="btn-play-card" id="btn-play-now">▶ JOGAR</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-catalog-note">
+            Nenhum outro jogo publicado no catálogo no momento. Apenas a demonstração <strong>Baseplate Clássica</strong> está disponível.
+          </div>
+        </section>
+
+        <!-- PÁGINA: AVATAR -->
+        <section id="page-avatar" class="portal-page">
+          <h2 class="section-heading">Editor de Personagem R6</h2>
+          <div class="avatar-editor-box">
+            <div class="avatar-preview-2d">
+              <div class="av-head" id="prev-head">
+                <div class="av-face">: )</div>
+              </div>
+              <div class="av-middle">
+                <div class="av-arm" id="prev-larm"></div>
+                <div class="av-torso" id="prev-torso"></div>
+                <div class="av-arm" id="prev-rarm"></div>
+              </div>
+              <div class="av-bottom">
+                <div class="av-leg" id="prev-lleg"></div>
+                <div class="av-leg" id="prev-rleg"></div>
+              </div>
+            </div>
+
+            <div class="avatar-controls">
+              <h3>Presets Clássicos</h3>
+              <div class="preset-buttons">
+                <button class="preset-btn" data-preset="noob">Noob Clássico</button>
+                <button class="preset-btn" data-preset="guest">Guest</button>
+                <button class="preset-btn" data-preset="builder">Construtor</button>
+                <button class="preset-btn" data-preset="ninja">Sombra</button>
+              </div>
+
+              <h3>Cores Individuais</h3>
+              <div class="color-pickers">
+                <label>Cabeça <input type="color" id="col-head" value="#f5cd30" /></label>
+                <label>Tronco <input type="color" id="col-torso" value="#0d69ac" /></label>
+                <label>Braço Esq. <input type="color" id="col-larm" value="#f5cd30" /></label>
+                <label>Braço Dir. <input type="color" id="col-rarm" value="#f5cd30" /></label>
+                <label>Perna Esq. <input type="color" id="col-lleg" value="#a4bd47" /></label>
+                <label>Perna Dir. <input type="color" id="col-rleg" value="#a4bd47" /></label>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== TELA DO JOGO 3D ==================== -->
+  <div id="game-screen" class="hidden">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Camada de Nomes e Balões de Chat 3D -->
+    <div id="overhead-layer"></div>
+
+    <!-- HUD Superior Esquerdo -->
+    <div class="core-top-left">
+      <button id="btn-menu-esc" class="core-icon-btn" title="Menu (Esc)">☰</button>
+      <button id="btn-toggle-chat" class="core-icon-btn active" title="Chat (/)">💬</button>
+      <button id="btn-shift-lock" class="core-icon-btn" title="Shift-Lock (Shift)">🎯</button>
+    </div>
+
+    <!-- Lista de Jogadores (Leaderboard) -->
+    <div class="leaderboard-box">
+      <div class="lb-header">
+        <span>Jogadores</span>
+        <span id="ingame-player-count">1</span>
+      </div>
+      <ul id="leaderboard-list"></ul>
+    </div>
+
+    <!-- Janela de Chat -->
+    <div id="chat-window" class="chat-box">
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" maxlength="120" placeholder="Pressione / para conversar ou /e dance..." />
+        <button id="chat-send-btn">Enviar</button>
+      </div>
+    </div>
+
+    <!-- Dicas de Controles -->
+    <div class="controls-hint">
+      <b>WASD</b> Mover · <b>Espaço</b> Pular · <b>Botão Dir.</b> Girar Câmera · <b>Scroll</b> Zoom / 1ª Pessoa · <b>Shift</b> Shift-Lock · <b>R</b> Resetar
+    </div>
+
+    <!-- Menu ESC -->
+    <div id="esc-menu" class="esc-overlay hidden">
+      <div class="esc-panel">
+        <div class="esc-header">
+          <h2>Baseplate Clássica</h2>
+          <button id="btn-close-esc">✕</button>
+        </div>
+
+        <div class="esc-settings">
+          <div class="setting-row">
+            <label>Sensibilidade da Câmera</label>
+            <input type="range" id="set-sensitivity" min="0.2" max="2.5" step="0.1" value="1" />
+          </div>
+          <div class="setting-row">
+            <label>Velocidade de Caminhada</label>
+            <input type="range" id="set-walkspeed" min="8" max="40" step="1" value="16" />
+          </div>
+          <div class="setting-row">
+            <label>Força do Pulo</label>
+            <input type="range" id="set-jumppower" min="25" max="85" step="1" value="50" />
+          </div>
+        </div>
+
+        <div class="esc-actions">
+          <button id="btn-resume-game" class="esc-btn primary">Voltar ao Jogo</button>
+          <button id="btn-reset-char" class="esc-btn warn">Resetar Personagem (R)</button>
+          <button id="btn-leave-game" class="esc-btn danger">Sair para o Início</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (Compatível com GitHub Pages sem build) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
